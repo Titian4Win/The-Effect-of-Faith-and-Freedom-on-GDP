@@ -1,0 +1,8 @@
+# The-Effect-of-Faith-and-Freedom-on-GDP
+Study on freedom, faith, and GDP per capita analyzed 795 observations from 2000 to 2020, accounting for factors like political stability, female school enrollment, and life expectancy. Results showed significant positive relationships between those factors and GDP per capita. R and libraries were used for analysis.
+I conducted a study to investigate whether there is a relationship between freedom, religion, and GDP per capita. To answer this question, I collected data on religiosity, denomination, and freedom and controlled for equator distance, political stability, female school enrollment, and life expectancy.
+I hypothesized that there would be an interaction between GDP per capita and denominations, and I found that religion had a positive and significant effect on GDP, with the exception of Orthodox Christianity, which had a negative effect. The Muslim denomination had the most significant change, with a 0.2% increase in GDP.
+I also hypothesized that religiosity would adversely affect GDP per capita, and I found that each additional attendance choice downwardly from 1-7 led to a decrease in GDP.
+Finally, I investigated the interaction between GDP and freedom and found a positive and significant relationship between the two. Specifically, every additional rank of Freedom leads to an increase in GDP per capita.
+To ensure the accuracy of my results, I used an instrumental variable regression technique, and my data was collected from the World Value Survey, The World Bank, and Google Developers. The data collected ranged from 2000 to 2020.
+
