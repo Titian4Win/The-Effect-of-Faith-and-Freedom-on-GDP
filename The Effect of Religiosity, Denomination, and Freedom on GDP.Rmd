@@ -1,0 +1,154 @@
+---
+title: "The Effect of Religiosity, Denomination, and Freedom on GDP"
+author: "Andrew Bradbury"
+date: "2023-03-07"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# Set working directory
+setwd("/Users/andrewscpu/iCloud Drive (Archive)/Desktop/Desktop - Andrew’s MacBook Air/Final Paper 533/Final Paper 533")
+#install.packages("haven")
+#install.packages("survey")
+#install.packages("jtools")
+#install.packages("remotes")
+#install.packages("ivreg", dependencies = TRUE)
+#install.packages("devtools")
+#install.packages("stargazer")
+#install.packages("Skimr")
+#library(devtools)
+# Load required packages
+library("haven")
+library("survey")
+library("jtools")
+library("remotes")
+library("svrepmisc")
+library("ivreg")
+library("modelsummary")
+library("stargazer")
+library("skimr")
+
+# Read data
+Freedom <- read.csv("/Users/andrewscpu/Documents/GitHub/Titian4Win.github.io/Titian4Win.github.io/Faith/Dev_Faith/How_often_do_you_attend_religious_services.csv")
+
+# View data
+head(Freedom)
+names(Freedom)
+summary(Freedom[, 1:22])
+
+# Fit regression models
+F_ols <- lm(log(GDP_Per_Capita) ~ Freedom + Miles_Equator + Political_Stability + School_Enrollment_F + Life_Expency,
+            data = Freedom)
+summary(F_ols)
+F_iv <- ivreg(log(GDP_Per_Capita) ~ Freedom + Miles_Equator + Political_Stability + School_Enrollment_F + Life_Expency,
+              data = Freedom)
+F_iv2 <- ivreg(log(GDP_Per_Capita) ~ None.at.all + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9 + A.great.deal + Don.t.know + Miles_Equator + Political_Stability + School_Enrollment_F + Life_Expency,
+              data = Freedom)
+
+# Store regression models in a list
+F_list <- list(OLS = F_ols, IV = F_iv)
+
+# Print regression results using stargazer package
+summary(F_iv2)
+summary(F_iv)
+stargazer(F_iv2, type="text",
+          dep.var.labels=c("GDP Per Capita"), title = "Regression Results", digit=1, 
+          out= "models.text",covariate.labels=c("None at all", "2", "3", "4", "5", "6", "7", "8", "9", "A Great Deal", "Dont Know","Equator Distance", "Political Stability", "Female School Enrollment ", "Life Expectency"))
+stargazer(F_ols, type="text", 
+          dep.var.labels=c("GDP Per Capita"), title = "Regression Results", digit=1, 
+          out= "models.text", 
+          covariate.labels=c("Freedom", "Equator Distance", "Political Stability", "Female School Enrollment ", "Life Expectency"))
+#msummary(P_list)
+#modelplot(P_list)
+#unique exchange rates areama model
+
+# Read data
+Denomination <- read.csv("/Users/andrewscpu/Documents/GitHub/Titian4Win.github.io/Titian4Win.github.io/Faith/Dev_Faith/Denomination.csv")
+
+# View data
+names(Denomination)
+
+# Fit regression models
+D_ols <- lm(log(GDP_Per_Capita) ~ Protestant + Roman_Catholic + Orthodox + Jew + Muslim + Hindu + Buddhist + Other.Christian + No_religion + Miles_Equator + Political.Stability + School.Enrollment.Female + Life.expency,
+            data = Denomination)
+
+D_ols <- lm(log(GDP_Per_Capita) ~ Protestant*Roman_Catholic*Orthodox + Jew + Muslim + Hindu + Buddhist + No_religion + Miles_Equator + Political.Stability + School.Enrollment.Female + Life.expency,
+            data = Denomination)
+
+# Generate regression table using stargazer
+stargazer(D_ols, type="text", 
+          dep.var.labels=c("GDP Per Capita"), title = "Regression Results", digit=1, 
+          out= "models.text", 
+          covariate.labels=c("Protestant", "Catholic", "Orthodox Christian", "Jewish", "Muslim", "Hindu", "Buddhist", "Other Christian", "No Religon","Equator Distance", "Political Stability", "Female School Enrollment ", "Life Expectency"))
+
+summary(D_ols)
+
+D_iv <- ivreg(log(GDP_Per_Capita) ~ Protestant + No_religion + Roman_Catholic + Orthodox + Jew + Muslim + Hindu + Buddhist + Miles_Equator + Political.Stability + School.Enrollment.Female + Life.expency,
+            data = Denomination)
+
+D_list <- list(OLS = D_ols, IV = D_iv)
+
+# Generate summary table using msummary
+msummary(D_list)
+
+summary(D_list)
+
+modelplot(D_list)
+
+Religousity <- read.csv("/Users/andrewscpu/Documents/GitHub/Titian4Win.github.io/Titian4Win.github.io/Faith/Dev_Faith/Religousity.csv")
+
+names(Religousity)
+
+# Fit linear regression model
+R_ols <- lm(log(GDP_Per_Capita) ~ Religousity_3 + Miles_Equator + Political.Stability + School.Enrollment.Female + Life.Expency,
+              data = Religousity)
+
+summary(R_ols)
+
+# Load required packages
+library(lmtest) # For msummary function
+library(stargazer) # For stargazer function
+
+# Generate summary table using msummary
+msummary(R_ols, statistic = 'p.value', stars = c('*' = .1, '**' = .05, '***' = .01), title = 'Religousity on GDP Per Capita')
+
+# Generate regression table using stargazer
+stargazer(R_ols, type = "text", header = FALSE, title = "Linear Regression Results")
+
+R_iv <- ivreg(log(GDP_Per_Capita) ~ Religousity_3 + Miles_Equator + Political.Stability + School.Enrollment.Female + Life.Expency,
+              data = Religousity)
+
+R_list <- list(OLS = R_ols, IV = R_iv)
+
+# Generate summary table using msummary
+msummary(R_list)
+
+summary(R_list)
+
+modelplot(R_ols)
+
+# Generate regression table using stargazer
+stargazer(R_iv, type="text", 
+          dep.var.labels=c("GDP Per Capita"), title = "Regression Results", digit=1, 
+          out= "models.text", 
+          covariate.labels=c("Religousity", "Equator Distance", "Political Stability", "Female School Enrollment ", "Life Expectency"))
+
+#skim(Panel)
+skim(Freedom)
+skim(Religousity)
+skim(Denomination)
+          
+```
+
